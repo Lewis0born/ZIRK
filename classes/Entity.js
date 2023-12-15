@@ -4,8 +4,14 @@ class Entity {
         this.id = id;
         this.registry = registry;
         this.components = {};
-
+        /*
+        components = 
+        {
+            "Movement": ...,
+            "Position": ...
+        }
+        */
     }
-
-
 }
+
+export default Entity;

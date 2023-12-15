@@ -14,11 +14,14 @@ class MovementSystem extends System {
 
     update = () => {
         for(let i = 0; i < this.entities.length; i++){
-            const entity = entities[i];
-            let { Movement, Position } = this.entities.components;
+            const entity = this.entities[i];
+            let { Movement, Position } = entity.components;
 
             Position.x += Movement.vX;
             Position.y += Movement.vY;
         }
     }
 }
+
+
+export {MovementSystem};

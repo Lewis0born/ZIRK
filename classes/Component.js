@@ -29,3 +29,5 @@ class MovementComponent extends Component {
         this.collisionY = false;
     }
 }
+
+export {MovementComponent, PositionComponent};
