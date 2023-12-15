@@ -1,3 +1,5 @@
+import { canvas } from "../index.js";
+import { c } from "../index.js";
 
 class System {
     constructor(systemType){
@@ -23,5 +25,27 @@ class MovementSystem extends System {
     }
 }
 
+class RenderSystem extends System {
+    constructor(systemType){
+        super(systemType);
+        this.componentRequirements = ["Position"];
+    }
 
-export {MovementSystem};
+    update = () => {
+
+        for(let i = 0; i < this.entities.length; i++){
+            const { Position } = this.entities[i].components;
+            const {x,y,width,height} = Position;
+
+            // remember to clear the canvas
+            c.clearRect(0,0, canvas.width, canvas.height)
+            c.beginPath();
+            c.fillStyle = "red";
+            c.fillRect(x,y,width,height);
+            c.stroke();
+        }
+    }
+}
+
+
+export {MovementSystem, RenderSystem};

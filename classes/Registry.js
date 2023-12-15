@@ -1,6 +1,6 @@
 import { MovementComponent, PositionComponent } from "./Component.js";
 import Entity from "./Entity.js";
-import { MovementSystem } from "./System.js";
+import { MovementSystem, RenderSystem } from "./System.js";
 
 class Registry {
     constructor() {
@@ -59,6 +59,10 @@ class Registry {
                 newSystem = new MovementSystem(systemType);
                 break;
             }
+            case "RenderSystem": {
+                newSystem = new RenderSystem(systemType);
+                break;
+            }
         }
 
         this.systems[systemType] = newSystem;
@@ -69,7 +73,7 @@ class Registry {
             /*
                 system = {
                     entities = [],
-                    componentRequirements: ["Moverment", ...],
+                    componentRequirements: ["Movement", ...],
                     systemType: "MovementSystem",
                     ...
                 }
