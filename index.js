@@ -70,16 +70,16 @@ class Game {
             if(type === "keydown"){
                 switch(key){
                     case "w":
-                        playerMovementComponent.vY -= 1;
+                        playerMovementComponent.vY = -1;
                         break;
                     case "a":
-                        playerMovementComponent.vX  -= 1;
+                        playerMovementComponent.vX  = -1;
                         break;
                     case "s":
-                        playerMovementComponent.vY += 1;
+                        playerMovementComponent.vY = 1;
                         break;
                     case "d":
-                        playerMovementComponent.vX += 1;
+                        playerMovementComponent.vX = 1;
                         break;
                     default:
                         break;
