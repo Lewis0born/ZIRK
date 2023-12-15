@@ -1,5 +1,8 @@
 
 const canvas = document.getElementById("gameScreen");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
 const c = canvas.getContext("2d");
 
 class Game {
@@ -33,7 +36,7 @@ class Game {
         const {x, y, width, height} = this.player;
 
         // remember to clear the canvas
-        c.clearRect(0,0, 1000, 1000)
+        c.clearRect(0,0, canvas.width, canvas.height)
 
         c.beginPath();
         c.fillStyle = "red";
