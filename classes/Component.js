@@ -48,4 +48,43 @@ class SpriteComponent extends Component {
     }
 }
 
-export {MovementComponent, PositionComponent, SpriteComponent};
+class AnimationComponent extends Component {
+    constructor(componentType, componentObj){
+        super(componentType);
+        this.frames = componentObj.frames;
+        /*
+            {
+                down: {
+                    move: {
+                        // srcRect gets location of correct link on sprite sheet
+                        srcRect: [
+                            {x,y,width,height},
+                            {x,y,width,height}
+                        ],
+                        currentFrame: 0,
+                        numFrames: 2,
+                        frameSpeedRate: 3,
+                        startTime: Date.Now()
+                    },
+                    attack: {
+                        srcRect: {x,y,width,height},
+                        currentFrame: 0,
+                        numFrames: 2,
+                        frameSpeedRate: 3,
+                        startTime: Date.Now()
+                    },
+
+                },
+                up: {},
+                left: {},
+                right: {}
+            }
+        */
+
+        this.currentTimeOfAnimation = componentObj.currentTimeOfAnimation;
+        this.facing = componentObj.facing;    // string
+        this.shouldAnimate = componentObj.shouldAnimate;
+    }
+}
+
+export {MovementComponent, PositionComponent, SpriteComponent, AnimationComponent};

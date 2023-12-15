@@ -1,5 +1,4 @@
-import { canvas } from "../index.js";
-import { c } from "../index.js";
+import { canvas, c } from "../index.js";
 
 class System {
     constructor(systemType){
@@ -37,6 +36,7 @@ class RenderSystem extends System {
 
         for(let i = 0; i < this.entities.length; i++){
             const { Position, Sprite } = this.entities[i].components;
+
             const { x , y , width , height } = Position;
             const { srcRect, path, sprite } = Sprite;
             const { x : sx,  y : sy , width : sw, height : sh } = srcRect;
@@ -50,5 +50,33 @@ class RenderSystem extends System {
     }
 }
 
+class AnimationSystem extends System {
+    constructor(systemType){
+        super(systemType);
+        this.componentRequirements = ["Position", "Sprite", "Animation"];
+    }
 
-export {MovementSystem, RenderSystem};
+    update = (gameTime) => {
+
+        for(let i = 0; i < this.entities.length; i++){
+            const entity = this.entities[i];
+
+            const { facing, shouldAnimate } = entity.components["Animation"];
+
+            if(shouldAnimate){
+                const currentFrame = Math.floor(
+                    (gameTime - entity.components["Animation"]["currentTimeOfAnimation"]) *
+                    entity.components["Animation"]["frames"][facing]["move"]["frameSpeedRate"] / 1000
+                    ) % entity.components["Animation"]["frames"][facing]["move"]["numFrames"];
+    
+                entity.components["Sprite"]["srcRect"] = entity.components["Animation"]["frames"][facing]["move"]["srcRect"][currentFrame];
+                entity.components["Animation"]["frames"][facing]["move"]["currentFrame"] = currentFrame;
+            }
+            
+        }
+
+    }
+}
+
+
+export {MovementSystem, RenderSystem, AnimationSystem};
