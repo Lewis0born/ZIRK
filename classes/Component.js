@@ -30,4 +30,22 @@ class MovementComponent extends Component {
     }
 }
 
-export {MovementComponent, PositionComponent};
+class SpriteComponent extends Component {
+    constructor(componentType, componentObj){
+        super(componentType);
+        this.sprite = new Image();
+        this.sprite.src = componentObj.path;
+        this.srcRect = componentObj.srcRect;
+        /* srcRect = 
+            {
+                x,
+                y,
+                width,
+                height
+            }
+
+        */
+    }
+}
+
+export {MovementComponent, PositionComponent, SpriteComponent};

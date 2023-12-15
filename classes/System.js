@@ -28,20 +28,23 @@ class MovementSystem extends System {
 class RenderSystem extends System {
     constructor(systemType){
         super(systemType);
-        this.componentRequirements = ["Position"];
+        this.componentRequirements = ["Position", "Sprite"];
     }
 
     update = () => {
+        // remember to clear the canvas
+        c.clearRect(0,0, canvas.width, canvas.height)
 
         for(let i = 0; i < this.entities.length; i++){
-            const { Position } = this.entities[i].components;
-            const {x,y,width,height} = Position;
+            const { Position, Sprite } = this.entities[i].components;
+            const { x , y , width , height } = Position;
+            const { srcRect, path, sprite } = Sprite;
+            const { x : sx,  y : sy , width : sw, height : sh } = srcRect;
 
-            // remember to clear the canvas
-            c.clearRect(0,0, canvas.width, canvas.height)
             c.beginPath();
-            c.fillStyle = "red";
-            c.fillRect(x,y,width,height);
+            //c.fillStyle = "red";
+            //c.fillRect(x,y,width,height);
+            c.drawImage(sprite, sx, sy, sw, sh, x, y, width, height,);
             c.stroke();
         }
     }

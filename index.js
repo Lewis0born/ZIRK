@@ -35,9 +35,22 @@ class Game {
             }
         }
 
-        this.player = this.registry.createEntity([dummyMovementConponent, dummyPositionComponent]);
+        const dummySpriteComponent = {
+            name: "Sprite",
+            value: {
+                path: "./assets/link.png",
+                srcRect: {
+                    x: 58,
+                    y: -1,
+                    width: 19,
+                    height: 19
+                }
+            } 
+        }
+
+        this.player = this.registry.createEntity([dummyMovementConponent, dummyPositionComponent, dummySpriteComponent]);
         this.registry.addEntityToSystem(this.player);
-        console.log(this.registry.systems);
+        console.log(this.player);
 
         // handle user input
         document.addEventListener("keyup", this.userInput)
