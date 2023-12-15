@@ -14,11 +14,16 @@ class Game {
             height: 50,
             width: 60
         }
+
+        // handle user input
+        document.addEventListener("keyup", this.userInput)
+        document.addEventListener("keydown", this.userInput)
+
+
     }
 
     update = () => {
-        this.player.x += 1;
-
+       
         // this continuously updates game
         requestAnimationFrame(this.update);
 
@@ -38,6 +43,36 @@ class Game {
         // this continuously renders game
         requestAnimationFrame(this.render);
     }
+
+    userInput = (e) => {
+
+        const {key, type} = e;
+
+        if(this.player){
+            if(type === "keydown"){
+                switch(key){
+                    case "w":
+                        this.player.y -= 1;
+                        break;
+                    case "a":
+                        this.player.x -= 1;
+                        break;
+                    case "s":
+                        this.player.y += 1;
+                        break;
+                    case "d":
+                        this.player.x += 1;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+    }
+
+
+
 }
 
 const game = new Game();
