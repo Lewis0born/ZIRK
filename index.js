@@ -22,15 +22,17 @@ class Game {
 
     initialise = () => {
         
+        this.registry.addSystem("CollisionSystem");
         this.registry.addSystem("MovementSystem");
         this.registry.addSystem("RenderSystem");
         this.registry.addSystem("AnimationSystem");
+        
 
         const dummyPositionComponent = {
             name: "Position",
             value: {
-                x: 0,
-                y: 0,
+                x: 500,
+                y: 500,
                 height: TILE_SIZE - 15,
                 width: TILE_SIZE - 15
             }
@@ -57,7 +59,11 @@ class Game {
             } 
         }
 
-        this.player = this.registry.createEntity([dummyMovementConponent, dummyPositionComponent, dummySpriteComponent, LINK_ANIMATION]);
+        const dummyCollisionComponent = {
+            name: "Collision"
+        }
+
+        this.player = this.registry.createEntity([dummyMovementConponent, dummyPositionComponent, dummySpriteComponent, dummyCollisionComponent, LINK_ANIMATION]);
         //this.registry.addEntityToSystem(this.player);
         console.log(this.player);
 
@@ -75,6 +81,7 @@ class Game {
        
         // this continuously updates game
         this.registry.update();
+        this.registry.getSystem("CollisionSystem").update(this.player);
         this.registry.getSystem("MovementSystem").update();
         this.registry.getSystem("RenderSystem").update();
         this.registry.getSystem("AnimationSystem").update(this.gameTime);
@@ -99,25 +106,25 @@ class Game {
                     case "w": {
                         playerAnimationComponent.shouldAnimate = true;
                         playerAnimationComponent.facing = "up";
-                        playerMovementComponent.vY = -1;
+                        playerMovementComponent.vY = -5;
                         break;
                     }
                     case "a": {
                         playerAnimationComponent.shouldAnimate = true;
                         playerAnimationComponent.facing = "left"
-                        playerMovementComponent.vX  = -1;
+                        playerMovementComponent.vX  = -5;
                         break;
                     }
                     case "s": {
                         playerAnimationComponent.shouldAnimate = true;
                         playerAnimationComponent.facing = "down";
-                        playerMovementComponent.vY = 1;
+                        playerMovementComponent.vY = 5;
                         break;
                     }
                     case "d": {
                         playerAnimationComponent.shouldAnimate = true;
                         playerAnimationComponent.facing = "right";
-                        playerMovementComponent.vX = 1;
+                        playerMovementComponent.vX = 5;
                         break;
                     }
                     default: {
@@ -149,12 +156,21 @@ class Game {
         for(let i = 0; i < this.numRows; i++){
             for(let j = 0; j < this.numCols; j++){
 
+                let components = [];
+
                 const tile = screenObject.screen[i][j];
                 let srcRect = undefined;
                 let path = '';
 
                 if(typeof tile === "number"){
                     path = "tiles/";
+                } else if(typeof tile === "string"){
+                    path = "collidables/";
+                    const dummyCollisionComponent = {
+                        name: "Collision",
+
+                    }
+                    components.push(dummyCollisionComponent);
                 } else if (typeof tile === "undefined"){
                     continue;
                 }
@@ -169,6 +185,8 @@ class Game {
                     }
                 }
 
+                components.push(dummySpriteComponent);
+
                 const dummyPositionComponent = {
                     name: "Position",
                     value: {
@@ -179,7 +197,9 @@ class Game {
                     }
                 }
 
-                this.registry.createEntity([dummySpriteComponent, dummyPositionComponent]);
+                components.push(dummyPositionComponent);
+
+                this.registry.createEntity(components);
             }
         }
     }

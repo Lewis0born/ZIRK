@@ -1,6 +1,6 @@
-import { AnimationComponent, MovementComponent, PositionComponent, SpriteComponent } from "./Component.js";
+import { AnimationComponent, CollisionComponent, MovementComponent, PositionComponent, SpriteComponent } from "./Component.js";
 import Entity from "./Entity.js";
-import { AnimationSystem, MovementSystem, RenderSystem } from "./System.js";
+import { AnimationSystem, CollisionSystem, MovementSystem, RenderSystem } from "./System.js";
 
 class Registry {
     constructor() {
@@ -53,10 +53,16 @@ class Registry {
                     newEntityComponents["Sprite"] = new SpriteComponent(component["name"], componentObj);
                     break;
                 }
-                case "Animation":
+                case "Animation": {
                     const componentObj = component["value"];
                     newEntityComponents["Animation"] = new AnimationComponent(component["name"], componentObj);
                     break;
+                }
+                case "Collision": {
+                    const componentObj = component["value"];
+                    newEntityComponents["Collision"] = new CollisionComponent(component["name"], componentObj);
+                    break;
+                }
                 default:
                     break;
             }
@@ -82,6 +88,10 @@ class Registry {
             }
             case "AnimationSystem": {
                 newSystem = new AnimationSystem(systemType);
+                break;
+            }
+            case "CollisionSystem": {
+                newSystem = new CollisionSystem(systemType);
                 break;
             }
         }
