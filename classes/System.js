@@ -20,6 +20,22 @@ class MovementSystem extends System {
 
             Position.x += Movement.vX;
             Position.y += Movement.vY;
+
+            /* This doesnt face correctly
+            if(Movement.vX > 0){
+                Animation.facing = "right";
+            }
+            if(Movement.vX < 0){
+                Animation.facing = "left";
+            }
+            if(Movement.vY < 0){
+                Animation.facing = "up";
+            }
+            if(Movement.vY > 0){
+                Animation.facing = "down";
+            }*/
+
+            
         }
     }
 }
@@ -39,12 +55,17 @@ class RenderSystem extends System {
 
             const { x , y , width , height } = Position;
             const { srcRect, path, sprite } = Sprite;
-            const { x : sx,  y : sy , width : sw, height : sh } = srcRect;
 
             c.beginPath();
             //c.fillStyle = "red";
             //c.fillRect(x,y,width,height);
-            c.drawImage(sprite, sx, sy, sw, sh, x, y, width, height,);
+            if(srcRect){
+                const { x : sx,  y : sy , width : sw, height : sh } = srcRect;
+
+                c.drawImage(sprite, sx, sy, sw, sh, x, y, width, height,);
+            } else {
+                c.drawImage(sprite, x, y, width, height);
+            }
             c.stroke();
         }
     }

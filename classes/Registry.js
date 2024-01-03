@@ -10,6 +10,14 @@ class Registry {
 
     }
 
+    update = () => {
+        this.entitiesToBeAdded.forEach((entity) => {
+            this.addEntityToSystem(entity);
+        })
+
+        this.entitiesToBeAdded = [];
+    }
+
     // array of objects: e.g. {"Movement", "Position"}
     /*
         {
