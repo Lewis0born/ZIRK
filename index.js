@@ -14,6 +14,7 @@ class Game {
         this.player = undefined;
         this.registry = new Registry()
         this.gameTime = Date.now();
+        this.isDebug = true;
 
         //screen size
         this.numRows = 13;
@@ -83,7 +84,7 @@ class Game {
         this.registry.update();
         this.registry.getSystem("CollisionSystem").update(this.player);
         this.registry.getSystem("MovementSystem").update();
-        this.registry.getSystem("RenderSystem").update();
+        this.registry.getSystem("RenderSystem").update(this.isDebug);
         this.registry.getSystem("AnimationSystem").update(this.gameTime);
         requestAnimationFrame(this.update);
 
@@ -126,6 +127,9 @@ class Game {
                         playerAnimationComponent.facing = "right";
                         playerMovementComponent.vX = 5;
                         break;
+                    }
+                    case "g": {
+                        this.isDebug = !this.isDebug;
                     }
                     default: {
                         break;

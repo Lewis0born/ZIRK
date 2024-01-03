@@ -105,12 +105,12 @@ class RenderSystem extends System {
         this.componentRequirements = ["Position", "Sprite"];
     }
 
-    update = () => {
+    update = (isDebug) => {
         // remember to clear the canvas
         c.clearRect(0,0, canvas.width, canvas.height)
 
         for(let i = 0; i < this.entities.length; i++){
-            const { Position, Sprite } = this.entities[i].components;
+            const { Position, Sprite, Collision } = this.entities[i].components;
 
             const { x , y , width , height } = Position;
             const { srcRect, path, sprite } = Sprite;
@@ -125,6 +125,15 @@ class RenderSystem extends System {
                 c.globalCompositeOperation = "destination-over"
                 c.drawImage(sprite, x, y, width, height);
             }
+
+            if(isDebug){
+                if(Collision){
+                    c.rect(x,y,width,height);
+                    c.lineWidth = 2;
+                    c.strokeStyle = "red";
+                }
+            }
+
             c.stroke();
         }
     }
