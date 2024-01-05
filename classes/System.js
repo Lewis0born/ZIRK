@@ -99,6 +99,46 @@ class CollisionSystem extends System {
     }
 }
 
+class TransitionSystem extends System {
+    constructor(systemType){
+        super(systemType);
+        this.componentRequirements = ["Position", "Transition"];
+    }
+
+    update = (player, eventBus, loadNewScreen) => {
+
+        if(player){
+            for(let i = 0; i < this.entities.length; i++){
+
+                const entity = this.entities[i];
+                const {x: px, y: py, width: pwidth, height: pheight} = player.components["Position"];
+                const {x: ex, y: ey, width: ewidth, height: eheight} = entity.components["Position"];
+
+                //AABB Square Collision Detection
+                if(px < ex + ewidth &&
+                    px + pwidth > ex &&
+                    py < ey + eheight &&
+                    py + pheight > ey){
+
+                        const {Transition} = entity.components;
+
+                        const event = {
+                            args: {
+                                ...Transition,
+                                eventTime: 0
+                            },
+                            func: loadNewScreen
+                        };
+
+                        eventBus.push(event);
+
+                }
+            }
+        }
+
+    }
+}
+
 class RenderSystem extends System {
     constructor(systemType){
         super(systemType);
@@ -168,4 +208,4 @@ class AnimationSystem extends System {
 }
 
 
-export {MovementSystem, RenderSystem, AnimationSystem, CollisionSystem};
+export {MovementSystem, RenderSystem, AnimationSystem, CollisionSystem, TransitionSystem};

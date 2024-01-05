@@ -36,6 +36,16 @@ class MovementComponent extends Component {
     }
 }
 
+class TransitionComponent extends Component {
+    constructor(componentType, componentObj){
+        super(componentType);
+
+        this.screen = componentObj.screen;
+        this.coX = componentObj.coX;
+        this.coY = componentObj.coY;
+    }
+}
+
 class SpriteComponent extends Component {
     constructor(componentType, componentObj){
         super(componentType);
@@ -93,4 +103,4 @@ class AnimationComponent extends Component {
     }
 }
 
-export {MovementComponent, PositionComponent, SpriteComponent, AnimationComponent, CollisionComponent};
+export {MovementComponent, PositionComponent, SpriteComponent, AnimationComponent, CollisionComponent, TransitionComponent};

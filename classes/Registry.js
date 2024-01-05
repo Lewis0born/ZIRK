@@ -1,11 +1,12 @@
-import { AnimationComponent, CollisionComponent, MovementComponent, PositionComponent, SpriteComponent } from "./Component.js";
+import { AnimationComponent, CollisionComponent, MovementComponent, PositionComponent, SpriteComponent, TransitionComponent } from "./Component.js";
 import Entity from "./Entity.js";
-import { AnimationSystem, CollisionSystem, MovementSystem, RenderSystem } from "./System.js";
+import { AnimationSystem, CollisionSystem, MovementSystem, RenderSystem, TransitionSystem } from "./System.js";
 
 class Registry {
     constructor() {
         this.numberOfEntities = 0;
         this.entitiesToBeAdded = [];
+        this.entitiesToBeRemoved = [];
         this.systems = {};
 
     }
@@ -63,6 +64,11 @@ class Registry {
                     newEntityComponents["Collision"] = new CollisionComponent(component["name"], componentObj);
                     break;
                 }
+                case "Transition": {
+                    const componentObj = component["value"];
+                    newEntityComponents["Transition"] = new TransitionComponent(component["name"], componentObj);
+                    break;
+                }
                 default:
                     break;
             }
@@ -92,6 +98,10 @@ class Registry {
             }
             case "CollisionSystem": {
                 newSystem = new CollisionSystem(systemType);
+                break;
+            }
+            case "TransitionSystem": {
+                newSystem = new TransitionSystem(systemType);
                 break;
             }
         }
@@ -134,6 +144,12 @@ class Registry {
 
     getSystem = (systemType) => {
         return this.systems[systemType];
+    }
+
+    removeAllEntities = () => {
+        Object.values(this.systems).forEach((system) => {
+            system.entities = [];
+        })
     }
 
 }

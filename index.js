@@ -1,6 +1,6 @@
 import { LINK_ANIMATION } from "./animations/animations.js";
 import Registry from "./classes/Registry.js";
-import { openingScreen } from "./screens/screens.js";
+import { openingScreen, shop } from "./screens/screens.js";
 
 export const canvas = document.getElementById("gameScreen");
 canvas.width = window.innerWidth;
@@ -15,6 +15,7 @@ class Game {
         this.registry = new Registry()
         this.gameTime = Date.now();
         this.isDebug = true;
+        this.eventBus = [];
 
         //screen size
         this.numRows = 13;
@@ -27,46 +28,9 @@ class Game {
         this.registry.addSystem("MovementSystem");
         this.registry.addSystem("RenderSystem");
         this.registry.addSystem("AnimationSystem");
+        this.registry.addSystem("TransitionSystem");
         
-
-        const dummyPositionComponent = {
-            name: "Position",
-            value: {
-                x: 500,
-                y: 500,
-                height: TILE_SIZE - 15,
-                width: TILE_SIZE - 15
-            }
-        }
-
-        const dummyMovementConponent = {
-            name: "Movement",
-            value: {
-                vX: 0,
-                vY: 0
-            }
-        }
-
-        const dummySpriteComponent = {
-            name: "Sprite",
-            value: {
-                path: "./assets/link.png",
-                srcRect: {
-                    x: 58,
-                    y: -1,
-                    width: 19,
-                    height: 19
-                }
-            } 
-        }
-
-        const dummyCollisionComponent = {
-            name: "Collision"
-        }
-
-        this.player = this.registry.createEntity([dummyMovementConponent, dummyPositionComponent, dummySpriteComponent, dummyCollisionComponent, LINK_ANIMATION]);
-        //this.registry.addEntityToSystem(this.player);
-        console.log(this.player);
+        this.createPlayer();
 
         // handle user input
         document.addEventListener("keyup", this.userInput)
@@ -79,20 +43,126 @@ class Game {
     update = () => {
 
         this.gameTime = Date.now();
+
+        const event = this.eventBus[this.eventBus.length - 1];
+        if(event){
+            /*
+            {
+                args: {
+                    screen,
+                    coX,
+                    coY,
+                    eventTime : number
+                },
+                func: Function
+            }
+            */
+            const {args, func} = event;
+            if(args.eventTime <= this.gameTime){
+                func(args);
+                this.eventBus.pop();
+            }
+            
+
+        }
        
         // this continuously updates game
         this.registry.update();
         this.registry.getSystem("CollisionSystem").update(this.player);
         this.registry.getSystem("MovementSystem").update();
-        this.registry.getSystem("RenderSystem").update(this.isDebug);
-        this.registry.getSystem("AnimationSystem").update(this.gameTime);
+        this.registry.getSystem("TransitionSystem").update(this.player, this.eventBus, this.loadNewScreen);
         requestAnimationFrame(this.update);
 
     }
 
     render = () => {
         // this continuously renders game
+        this.registry.getSystem("RenderSystem").update(this.isDebug);
+        this.registry.getSystem("AnimationSystem").update(this.gameTime);
         requestAnimationFrame(this.render);
+    }
+
+    loadNewScreen = ({coX, coY, screen}) => {
+
+        this.registry.removeAllEntities();
+
+        let newScreenObject;
+        switch(screen){
+            case "shop": {
+                newScreenObject = shop;
+                break;
+            }
+            default:
+                break;
+        }
+
+        this.createPlayer(coX, coY);
+        this.loadScreen(newScreenObject);        
+
+    }
+
+    createPlayer = (coX, coY) => {
+        let newComponents = [];
+        if(this.player){
+            const {components} = this.player;
+            Object.values(components).forEach((component) => {
+
+                if(component.componentType === "Position"){
+                    component.x = coX * TILE_SIZE;
+                    component.y = coY * TILE_SIZE;
+                }
+
+                if(component.componentType == "Sprite"){
+                    component.path = component.sprite.src;
+                }
+                newComponents.push({name: component.componentType, value: {...component}});
+            })
+            newComponents.push(LINK_ANIMATION);
+
+        } else {
+
+            const dummyPositionComponent = {
+                name: "Position",
+                value: {
+                    x: 500,
+                    y: 500,
+                    height: TILE_SIZE - 15,
+                    width: TILE_SIZE - 15
+                }
+            }
+    
+            const dummyMovementConponent = {
+                name: "Movement",
+                value: {
+                    vX: 0,
+                    vY: 0
+                }
+            }
+    
+            const dummySpriteComponent = {
+                name: "Sprite",
+                value: {
+                    path: "./assets/link.png",
+                    srcRect: {
+                        x: 58,
+                        y: -1,
+                        width: 19,
+                        height: 19
+                    }
+                } 
+            }
+    
+            const dummyCollisionComponent = {
+                name: "Collision"
+            }
+
+            newComponents = [dummyCollisionComponent, dummyPositionComponent, dummySpriteComponent, dummyMovementConponent, LINK_ANIMATION]
+
+        }
+        this.player = this.registry.createEntity(newComponents);
+
+
+        console.log("New components", newComponents);
     }
 
     userInput = (e) => {
@@ -162,7 +232,7 @@ class Game {
 
                 let components = [];
 
-                const tile = screenObject.screen[i][j];
+                let tile = screenObject.screen[i][j];
                 let srcRect = undefined;
                 let path = '';
 
@@ -175,6 +245,33 @@ class Game {
 
                     }
                     components.push(dummyCollisionComponent);
+                } else if(typeof tile === "object"){
+                    /*
+                    {
+                        type: string - "door", "actionablefile"
+                        tile: string/number - 0
+                        coX: number
+                        coY: number
+                        screen: string
+                    }
+
+                    */
+
+                    const {type} = tile;
+                    if(type === "door"){
+                        const {coX, coY, screen} = tile;
+                        const dummyTransitionComponent = {
+                            name: "Transition",
+                            value: {coX, coY, screen}
+                        };
+
+                        components.push(dummyTransitionComponent);
+                    }
+
+                    path = "actionableTiles/";
+
+                    tile = tile.tile;
+
                 } else if (typeof tile === "undefined"){
                     continue;
                 }
